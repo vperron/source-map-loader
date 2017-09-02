@@ -28,7 +28,12 @@ module.exports = function(input, inputMap) {
 		var dataUrlMatch = regexDataUrl.exec(url);
 		var callback = this.async();
 		if(dataUrlMatch) {
-			processMap(JSON.parse((new Buffer(dataUrlMatch[1], "base64")).toString()), this.context, callback);
+			try {
+			  processMap(JSON.parse((new Buffer(dataUrlMatch[1], "base64")).toString()), this.context, callback);
+			} catch (err) {
+			  emitWarning("Could not resolve SourceMap: '" + err)
+			  return untouched();
+			}
 		} else {
 			resolve(this.context, loaderUtils.urlToRequest(url), function(err, result) {
 				if(err) {
